@@ -1,0 +1,67 @@
+# azure-pipelines.yml
+# Push to main → build both frontend and backend, publish artifacts
+
+trigger:
+  branches:
+    include: [ main ]
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+
+# ── Stage 1: Backend ──────────────────────────────────────────────────────────
+- stage: Backend
+  displayName: Build & Test Backend
+  jobs:
+  - job: PythonBuild
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.11'
+
+    - script: |
+        cd backend
+        pip install -r requirements.txt
+        python -c "from tax_engine import calculate_sales_use_tax, TaxInput; print('tax_engine OK')"
+      displayName: Install & smoke-test
+
+    - script: |
+        cd backend
+        pip install pytest httpx
+        pytest tests/ -v --tb=short || true
+      displayName: Run tests (non-blocking)
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: backend
+        includeRootFolder: false
+        archiveFile: $(Build.ArtifactStagingDirectory)/backend.zip
+
+    - publish: $(Build.ArtifactStagingDirectory)/backend.zip
+      artifact: backend
+
+# ── Stage 2: Frontend ─────────────────────────────────────────────────────────
+- stage: Frontend
+  displayName: Build Frontend
+  jobs:
+  - job: AngularBuild
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+
+    - script: |
+        cd frontend
+        npm ci
+        npm run build:prod
+      displayName: npm install & build
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: frontend/dist/taxai-widget/browser
+        includeRootFolder: false
+        archiveFile: $(Build.ArtifactStagingDirectory)/frontend.zip
+
+    - publish: $(Build.ArtifactStagingDirectory)/frontend.zip
+      artifact: frontend

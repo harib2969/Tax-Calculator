@@ -1,0 +1,14 @@
+{
+  "AL": { "name": "Alabama", "state_rate": 0.04 },
+  "AZ": { "name": "Arizona", "state_rate": 0.056 },
+  "CA": { "name": "California", "state_rate": 0.0725 },
+  "CO": { "name": "Colorado", "state_rate": 0.029 },
+  "FL": { "name": "Florida", "state_rate": 0.06 },
+  "GA": { "name": "Georgia", "state_rate": 0.04 },
+  "IL": { "name": "Illinois", "state_rate": 0.0625 },
+  "MA": { "name": "Massachusetts", "state_rate": 0.0625 },
+  "NY": { "name": "New York", "state_rate": 0.04 },
+  "TX": { "name": "Texas", "state_rate": 0.0625 },
+  "WA": { "name": "Washington", "state_rate": 0.065 }
+}
+

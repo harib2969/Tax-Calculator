@@ -1,0 +1,401 @@
+// tax-widget.component.scss
+:host {
+  display: block;
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+$bg:       #0d0f14;
+$surface:  #13161e;
+$surface2: #1b1f2b;
+$border:   rgba(255,255,255,0.07);
+$accent:   #4ade80;
+$teal:     #22d3ee;
+$amber:    #f59e0b;
+$danger:   #f87171;
+$text:     #e8eaf0;
+$muted:    #6b7280;
+$r:        14px;
+
+.widget {
+  background: $bg;
+  color: $text;
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+// ── Header ──────────────────────────────────────────────────────────────────
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.badge {
+  display: inline-block;
+  background: rgba($accent, 0.1);
+  border: 1px solid rgba($accent, 0.2);
+  color: $accent;
+  font-size: 11px;
+  padding: 4px 14px;
+  border-radius: 100px;
+  letter-spacing: 0.08em;
+  margin-bottom: 18px;
+}
+
+h1 {
+  font-size: clamp(32px, 6vw, 52px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+
+  em { font-style: italic; color: $accent; }
+}
+
+.subtitle { color: $muted; font-size: 14px; }
+
+// ── Query card ───────────────────────────────────────────────────────────────
+.query-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $r;
+  display: flex;
+  align-items: flex-end;
+  padding: 6px 6px 6px 18px;
+  gap: 10px;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+
+  &.focused { border-color: rgba($accent, 0.4); }
+
+  textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: $text;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    resize: none;
+    padding: 8px 0;
+
+    &::placeholder { color: $muted; }
+  }
+}
+
+.send-btn {
+  background: $accent;
+  color: #0d1a11;
+  border: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, opacity 0.15s;
+
+  &:hover:not(:disabled) { transform: scale(1.06); }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+// ── Chips ────────────────────────────────────────────────────────────────────
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.chip {
+  background: $surface2;
+  border: 1px solid $border;
+  color: $muted;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+
+  &:hover { border-color: rgba($accent, 0.3); color: $accent; }
+}
+
+// ── Error ────────────────────────────────────────────────────────────────────
+.error-msg {
+  background: rgba($danger, 0.08);
+  border: 1px solid rgba($danger, 0.2);
+  color: $danger;
+  padding: 14px 18px;
+  border-radius: $r;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+// ── Skeleton loader ───────────────────────────────────────────────────────────
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.shimmer {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, $surface2 25%, rgba(255,255,255,0.06) 50%, $surface2 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+
+  &.w50 { width: 50%; }
+  &.w60 { width: 60%; }
+  &.w70 { width: 70%; }
+  &.w85 { width: 85%; }
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+// ── Results ───────────────────────────────────────────────────────────────────
+.results { animation: fadeUp 0.3s ease; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+// ── Entities ─────────────────────────────────────────────────────────────────
+.entities {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  background: $surface2;
+  border-radius: $r;
+  border: 1px solid $border;
+  margin-bottom: 16px;
+}
+
+.entity-label {
+  font-size: 10px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-right: 4px;
+}
+
+.tag {
+  background: rgba($teal, 0.08);
+  border: 1px solid rgba($teal, 0.2);
+  color: $teal;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 6px;
+
+  em { color: $muted; font-style: normal; margin-right: 4px; }
+
+  &.b2b { background: rgba($amber, 0.1); border-color: rgba($amber, 0.25); color: $amber; }
+}
+
+// ── Result grid ───────────────────────────────────────────────────────────────
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+
+  @media (max-width: 560px) { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $r;
+  padding: 22px;
+  position: relative;
+
+  &.primary {
+    border-color: rgba($accent, 0.15);
+    background: linear-gradient(135deg, rgba($accent, 0.03) 0%, $surface 100%);
+  }
+}
+
+.card-label {
+  font-size: 11px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+}
+
+.big-rate {
+  font-size: 38px;
+  font-weight: 700;
+  color: $accent;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.big-amount {
+  font-size: 28px;
+  font-weight: 600;
+  color: $text;
+  margin-bottom: 6px;
+}
+
+.sub { font-size: 12px; color: $muted; }
+
+.badge-exempt {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba($accent, 0.12);
+  border: 1px solid rgba($accent, 0.3);
+  color: $accent;
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+// ── Nexus / exemption card ────────────────────────────────────────────────────
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+
+  &.yes .dot { background: $accent; }
+  &.no  .dot { background: $amber; }
+
+  strong { font-size: 14px; }
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.reason {
+  font-size: 12px;
+  color: $muted;
+  line-height: 1.5;
+  margin-left: 16px;
+}
+
+.divider {
+  height: 1px;
+  background: $border;
+  margin: 14px 0;
+}
+
+// ── Notes ─────────────────────────────────────────────────────────────────────
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.note {
+  background: rgba($amber, 0.06);
+  border: 1px solid rgba($amber, 0.15);
+  color: #d4a847;
+  font-size: 13px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+// ── AI summary card ────────────────────────────────────────────────────────────
+.ai-card {
+  background: linear-gradient(135deg, rgba($accent, 0.04), rgba($teal, 0.04));
+  border: 1px solid rgba($accent, 0.15);
+  border-radius: $r;
+  padding: 20px 22px;
+  margin-bottom: 12px;
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ai-icon {
+  width: 26px;
+  height: 26px;
+  background: rgba($accent, 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.ai-title { font-size: 13px; color: $accent; font-weight: 500; }
+
+.ai-body {
+  font-size: 14px;
+  line-height: 1.75;
+  color: #c5c8d1;
+
+  strong { color: $text; font-weight: 500; }
+}
+
+// ── Disclaimer ────────────────────────────────────────────────────────────────
+.disclaimer {
+  font-size: 11px;
+  color: $muted;
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 8px;
+  margin-bottom: 32px;
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-top-color: #0d1a11;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── History panel ─────────────────────────────────────────────────────────────
+.history {
+  border-top: 1px solid $border;
+  padding-top: 20px;
+}
+
+.history-label {
+  font-size: 11px;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 12px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid $border;
+  gap: 12px;
+}
+
+.history-query { font-size: 13px; color: $muted; flex: 1; }
+.history-meta  { font-size: 12px; color: $accent; flex-shrink: 0; }

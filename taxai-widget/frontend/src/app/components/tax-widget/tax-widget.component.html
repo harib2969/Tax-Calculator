@@ -1,0 +1,128 @@
+<!-- src/app/components/tax-widget/tax-widget.component.html -->
+<div class="widget">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="badge">● LIVE · 2024 rates</span>
+    <h1>US Sales &amp; Use Tax<br><em>Estimator</em></h1>
+    <p class="subtitle">Ask in plain English — powered by GPT-4.5</p>
+  </div>
+
+  <!-- Query Input -->
+  <div class="query-card" [class.focused]="query.length > 0">
+    <textarea
+      [(ngModel)]="query"
+      (keydown)="onKeydown($event)"
+      placeholder="e.g. I sold $15,000 of SaaS to a customer in Texas…"
+      rows="2"
+    ></textarea>
+    <button class="send-btn" (click)="analyze()" [disabled]="loading || !query.trim()">
+      <span *ngIf="!loading">→</span>
+      <span *ngIf="loading" class="spinner"></span>
+    </button>
+  </div>
+
+  <!-- Example chips -->
+  <div class="chips" *ngIf="!result && !loading">
+    <button class="chip" *ngFor="let ex of examples" (click)="fillExample(ex)">
+      {{ ex | slice:0:48 }}…
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div class="error-msg" *ngIf="errorMsg">⚠ {{ errorMsg }}</div>
+
+  <!-- Loading skeleton -->
+  <div class="skeleton" *ngIf="loading">
+    <div class="shimmer w70"></div>
+    <div class="shimmer w50"></div>
+    <div class="shimmer w85"></div>
+    <div class="shimmer w60"></div>
+  </div>
+
+  <!-- Results -->
+  <div class="results" *ngIf="result && !loading">
+
+    <!-- Extracted entities row -->
+    <div class="entities">
+      <span class="entity-label">Extracted</span>
+      <span class="tag" *ngIf="result.extracted?.sale_amount">
+        <em>amount</em> ${{ result.extracted.sale_amount | number:'1.0-0' }}
+      </span>
+      <span class="tag">
+        <em>state</em> {{ result.state_name }}
+      </span>
+      <span class="tag">
+        <em>product</em> {{ result.product_type | titlecase }}
+      </span>
+      <span class="tag">
+        <em>type</em> {{ result.tax_type_label }}
+      </span>
+      <span class="tag b2b" *ngIf="result.extracted?.business_type === 'b2b'">B2B</span>
+    </div>
+
+    <!-- Main result grid -->
+    <div class="result-grid">
+
+      <!-- Tax owed card -->
+      <div class="card primary">
+        <div class="card-label">{{ result.tax_type_label }} Owed</div>
+        <div class="big-rate">{{ result.rate_pct }}%</div>
+        <div class="big-amount">${{ result.tax_amount | number:'1.2-2' }}</div>
+        <div class="sub">on ${{ result.sale_amount | number:'1.0-0' }} · total due ${{ result.total_due | number:'1.2-2' }}</div>
+
+        <!-- Exempt badge -->
+        <div class="badge-exempt" *ngIf="result.is_exempt">EXEMPT</div>
+      </div>
+
+      <!-- Nexus + Exemption card -->
+      <div class="card info">
+        <div class="card-label">Nexus &amp; Exemption</div>
+
+        <div class="status-row" [class.yes]="result.has_nexus" [class.no]="!result.has_nexus">
+          <span class="dot"></span>
+          <strong>Nexus: {{ result.has_nexus ? 'Yes' : 'No' }}</strong>
+        </div>
+        <p class="reason">{{ result.nexus_reason }}</p>
+
+        <div class="divider"></div>
+
+        <div class="status-row" [class.yes]="result.is_exempt" [class.no]="!result.is_exempt">
+          <span class="dot"></span>
+          <strong>Exempt: {{ result.is_exempt ? 'Yes' : 'No' }}</strong>
+        </div>
+        <p class="reason">{{ result.exemption_reason }}</p>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="notes" *ngIf="result.notes?.length">
+      <div class="note" *ngFor="let note of result.notes">💡 {{ note }}</div>
+    </div>
+
+    <!-- AI Summary -->
+    <div class="ai-card" *ngIf="result.summary">
+      <div class="ai-header">
+        <span class="ai-icon">✦</span>
+        <span class="ai-title">AI Summary</span>
+      </div>
+      <p class="ai-body" [innerHTML]="summaryHtml"></p>
+    </div>
+
+    <!-- Disclaimer -->
+    <p class="disclaimer">
+      Base state rates only · Does not include local/county taxes, penalties, or credits ·
+      Not professional tax advice · Consult a CPA for filing decisions.
+    </p>
+  </div>
+
+  <!-- History Panel -->
+  <div class="history" *ngIf="history.length > 0">
+    <div class="history-label">Recent queries</div>
+    <div class="history-item" *ngFor="let h of history">
+      <span class="history-query">{{ h.query | slice:0:60 }}{{ h.query.length > 60 ? '…' : '' }}</span>
+      <span class="history-meta">{{ h.state }} · ${{ h.tax_amount | number:'1.2-2' }}</span>
+    </div>
+  </div>
+
+</div>

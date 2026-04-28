@@ -1,0 +1,205 @@
+
+TAXAI WIDGET — VERIFIED PROJECT REFERENCE
+==========================================
+Last verified: 28-Apr-2026 | All files confirmed clean ✓
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ CORRECT FOLDER STRUCTURE (after deleting {backend)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+taxai-widget/
+│
+├── azure-pipelines.yml          (2 KB)   Azure DevOps CI/CD
+├── .gitignore                   (1 KB)
+│
+├── backend/                              Python FastAPI backend
+│   ├── main.py                  (48 lines)   App entry point + CORS
+│   ├── startup.py               (44 lines)   Auto-detects LLM + storage
+│   ├── tax_engine.py           (309 lines)  ★ STANDALONE — swap this
+│   ├── requirements.txt                     pip dependencies
+│   ├── .env.example                         Fill in on the day
+│   │
+│   ├── providers/
+│   │   ├── __init__.py
+│   │   ├── base.py              (29 lines)   Abstract interfaces
+│   │   │
+│   │   ├── llm/
+│   │   │   ├── __init__.py
+│   │   │   ├── azure_openai_adapter.py  (94 lines)  GPT-4.5
+│   │   │   └── rule_based_adapter.py   (111 lines)  No-key fallback
+│   │   │
+│   │   └── storage/
+│   │       ├── __init__.py
+│   │       ├── mongodb_adapter.py       (52 lines)  MongoDB
+│   │       └── memory_adapter.py        (26 lines)  In-memory fallback
+│   │
+│   └── routers/
+│       ├── __init__.py
+│       ├── analyze.py           (96 lines)   POST /api/analyze
+│       └── history.py           (8 lines)    GET  /api/history
+│
+├── frontend/                             Angular 17 widget
+│   ├── package.json             (29 lines)
+│   └── src/app/
+│       ├── app.component.ts     (11 lines)
+│       ├── app.config.ts        (11 lines)
+│       │
+│       ├── models/
+│       │   └── tax.model.ts     (36 lines)   TypeScript interfaces
+│       │
+│       ├── services/
+│       │   └── tax.service.ts   (21 lines)   HTTP calls to backend
+│       │
+│       ├── environments/
+│       │   ├── environment.ts           Dev  → localhost:8000
+│       │   └── environment.prod.ts      Prod → YOUR_BACKEND_URL
+│       │
+│       └── components/tax-widget/
+│           ├── tax-widget.component.ts  (80 lines)   Logic
+│           ├── tax-widget.component.html(124 lines)  Template
+│           └── tax-widget.component.scss(401 lines)  Styles
+│
+└── docs/
+    └── TaxAI-README.docx                Full README document
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ WHAT TO DELETE FROM YOUR EXTRACTED ZIP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ❌ Delete entire folder:  {backend
+     (corrupted artifact from zip creation — safely delete it)
+
+  ✅ Keep everything else exactly as-is
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ HOW TO RUN LOCALLY (no API keys needed)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1 — Backend
+─────────────────
+Open Terminal / Command Prompt and run:
+
+  cd taxai-widget/backend
+
+  # Create virtual environment
+  python -m venv venv
+
+  # Activate it
+  # Mac/Linux:
+  source venv/bin/activate
+  # Windows:
+  venv\Scripts\activate
+
+  # Install dependencies
+  pip install -r requirements.txt
+
+  # Copy env file (leave values blank for no-key mode)
+  cp .env.example .env
+
+  # Start the server
+  python -m uvicorn main:app --reload --port 8000
+
+You should see:
+  ✓ LLM provider : Rule-based NLP (no API key found)
+  ✓ Storage      : In-memory (no MONGODB_URI set)
+  ✓ TaxAI backend ready
+
+Test it: open http://localhost:8000/health in browser
+→ Should show: {"status":"ok"}
+
+
+STEP 2 — Frontend
+──────────────────
+Open a SECOND terminal window and run:
+
+  cd taxai-widget/frontend
+
+  # Install Node packages
+  npm install
+
+  # Start Angular dev server
+  npm start
+
+Open browser at: http://localhost:4200
+→ You should see the TaxAI widget
+
+
+STEP 3 — On Codeathon Day (add real credentials)
+──────────────────────────────────────────────────
+Open backend/.env and fill in:
+
+  AZURE_OPENAI_KEY=<key from organizers>
+  AZURE_OPENAI_ENDPOINT=https://YOUR_RESOURCE.openai.azure.com
+  AZURE_OPENAI_DEPLOYMENT=gpt-4.5
+  AZURE_OPENAI_API_VERSION=2024-02-01
+
+  MONGODB_URI=<connection string from organizers>
+  MONGODB_DB=taxai
+
+Restart backend → log will confirm GPT-4.5 and MongoDB are active.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ HOW TO SWAP THE TAX ENGINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Only ONE file changes: backend/tax_engine.py
+Everything else (Angular, FastAPI, adapters) stays the same.
+
+Current engine: US Sales & Use Tax (state rates, nexus, exemptions)
+
+To switch to Federal Income Tax:
+  1. Replace backend/tax_engine.py with the federal version
+     (keeps same TaxInput / TaxResult class names)
+  2. That's it. No other file changes needed.
+
+To switch to a third-party API (TaxJar / Avalara):
+  1. Replace backend/tax_engine.py with a version that
+     calls the external API instead of local logic
+  2. That's it. No other file changes needed.
+
+The contract the router expects from tax_engine.py:
+  - Class:    TaxInput
+  - Function: calculate_sales_use_tax(TaxInput) → TaxResult
+  - TaxResult must have: tax_amount, rate_pct, state_name,
+    tax_type_label, total_due, has_nexus, nexus_reason,
+    is_exempt, exemption_reason, notes (list)
+
+If you also change the LLM extraction prompt (for federal tax):
+  - File: backend/providers/llm/azure_openai_adapter.py
+  - Edit: EXTRACT_PROMPT variable (top of file, ~15 lines)
+  - This is optional — only needed if field names change
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ QUICK TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problem                          Fix
+───────────────────────────────────────────────────────────
+Backend won't start              Check Python version: python --version
+                                 Must be 3.11 or higher
+
+"Module not found" error         Make sure venv is activated
+                                 Re-run: pip install -r requirements.txt
+
+Angular "npm: command not found" Install Node.js from nodejs.org (v20 LTS)
+
+Angular "ng: command not found"  Run: npm install -g @angular/cli
+
+CORS error in browser            Backend must be running on port 8000
+                                 Check http://localhost:8000/health
+
+Widget shows "Something went     Open browser DevTools (F12) → Console
+wrong"                           → read the actual error message
+
+Port 8000 already in use         Run on different port:
+                                 python -m uvicorn main:app --port 8001
+                                 Then update frontend/src/environments/
+                                 environment.ts → apiUrl: 'http://localhost:8001'
+
+{backend folder in zip           Delete it — it's a corrupted artifact,
+                                 all real code is in the backend/ folder

@@ -1,0 +1,43 @@
+trigger:
+  branches:
+    include:
+      - main
+      - master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  pythonVersion: '3.11'
+  nodeVersion: '20.x'
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildAndPackage
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+
+          - script: |
+              cd backend
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+              python -m compileall app
+            displayName: Build backend
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+
+          - script: |
+              cd frontend
+              npm install
+              npm run build
+            displayName: Build frontend
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.SourcesDirectory)'
+              ArtifactName: tax-estimator-widget
